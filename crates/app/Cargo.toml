@@ -1,0 +1,21 @@
+[package]
+name = "iskandil-app"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Iskandil - disk derinlik olcer (egui arayuzu)"
+
+[[bin]]
+name = "iskandil"
+path = "src/main.rs"
+
+[dependencies]
+iskandil-core.workspace = true
+eframe.workspace = true
+egui.workspace = true
+rfd.workspace = true
+image.workspace = true
+
+[build-dependencies]
+winres = "0.1"

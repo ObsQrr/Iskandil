@@ -1,0 +1,12 @@
+target/
+dist/
+demo/
+İskandil Demo/
+*.log
+check.log
+build.log
+clippy.log
+shot*.log
+docs/screenshots/crop-*.png
+assets/version.json
+assets/exe-icon-check.png
