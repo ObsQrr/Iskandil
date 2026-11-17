@@ -7,8 +7,8 @@ fn main() {
         res.set("FileDescription", "İskandil — disk derinlik ölçer");
         res.set("OriginalFilename", "iskandil.exe");
         res.set("LegalCopyright", "MIT");
-        res.set("ProductVersion", "0.1.0");
-        res.set("FileVersion", "0.1.0");
+        res.set("ProductVersion", env!("CARGO_PKG_VERSION"));
+        res.set("FileVersion", env!("CARGO_PKG_VERSION"));
         if let Err(error) = res.compile() {
             println!("cargo:warning=Windows kaynak dosyasi derlenemedi: {error}");
         }

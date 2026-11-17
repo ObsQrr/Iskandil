@@ -4,6 +4,7 @@ use crate::theme::{self, Palette};
 use crate::widgets;
 use egui::{Align2, Color32, Id, Rect, RichText, Sense, Stroke, pos2, vec2};
 use iskandil_core::format as fmt;
+use iskandil_core::model::SortOrder;
 use iskandil_core::scan::{ScanOptions, ScanSession};
 use iskandil_core::settings::{Settings, ThemeMode};
 use iskandil_core::sys::{self, DriveInfo};
@@ -144,6 +145,7 @@ pub struct IskandilApp {
     pub expanded: HashSet<u32>,
     pub expanded_rev: u64,
     pub rows_cache: Option<RowsCache>,
+    pub sort_order: SortOrder,
     pub search: String,
     pub search_cache: Option<SearchCache>,
     pub generation: u64,
@@ -191,6 +193,7 @@ impl IskandilApp {
             expanded: HashSet::new(),
             expanded_rev: 0,
             rows_cache: None,
+            sort_order: SortOrder::default(),
             search: String::new(),
             search_cache: None,
             generation: 0,
@@ -438,7 +441,7 @@ impl IskandilApp {
         while let Some((id, depth)) = stack.pop() {
             rows.push((id, depth));
             if self.expanded.contains(&id) {
-                let kids = tree.children_sorted(id);
+                let kids = tree.children_sorted_by(id, self.sort_order);
                 for &kid in kids.iter().rev() {
                     stack.push((kid, depth + 1));
                 }
@@ -462,7 +465,7 @@ impl IskandilApp {
         let hits = if self.search.trim().is_empty() {
             Vec::new()
         } else if let Some(tree) = &self.tree {
-            tree.find(&self.search, 300)
+            tree.find_sorted(&self.search, 300, self.sort_order)
         } else {
             Vec::new()
         };

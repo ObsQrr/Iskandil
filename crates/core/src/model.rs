@@ -11,6 +11,17 @@ use std::collections::BinaryHeap;
 
 pub const NONE: u32 = u32::MAX;
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum SortOrder {
+    #[default]
+    SizeDescending,
+    SizeAscending,
+    NameAscending,
+    NameDescending,
+    ModifiedDescending,
+    ModifiedAscending,
+}
+
 #[derive(Clone, Debug)]
 pub struct Node {
     pub name: Box<str>,
@@ -167,15 +178,30 @@ impl Tree {
 
     /// Cocuklari boyuta gore azalan, esitlikte ada gore sirali dondurur.
     pub fn children_sorted(&self, id: u32) -> Vec<u32> {
+        self.children_sorted_by(id, SortOrder::SizeDescending)
+    }
+
+    pub fn children_sorted_by(&self, id: u32, order: SortOrder) -> Vec<u32> {
         let mut out: Vec<u32> = self.children(id).collect();
-        out.sort_unstable_by(|&a, &b| {
+        self.sort_ids(&mut out, order);
+        out
+    }
+
+    pub fn sort_ids(&self, ids: &mut [u32], order: SortOrder) {
+        ids.sort_unstable_by(|&a, &b| {
             let na = &self.nodes[a as usize];
             let nb = &self.nodes[b as usize];
-            nb.size
-                .cmp(&na.size)
-                .then_with(|| na.name.to_lowercase().cmp(&nb.name.to_lowercase()))
+            let name = || na.name.to_lowercase().cmp(&nb.name.to_lowercase());
+            let primary = match order {
+                SortOrder::SizeDescending => nb.size.cmp(&na.size),
+                SortOrder::SizeAscending => na.size.cmp(&nb.size),
+                SortOrder::NameAscending => name(),
+                SortOrder::NameDescending => name().reverse(),
+                SortOrder::ModifiedDescending => nb.mtime.cmp(&na.mtime),
+                SortOrder::ModifiedAscending => na.mtime.cmp(&nb.mtime),
+            };
+            primary.then_with(name).then_with(|| a.cmp(&b))
         });
-        out
     }
 
     pub fn is_ancestor(&self, ancestor: u32, node: u32) -> bool {
@@ -285,6 +311,10 @@ impl Tree {
 
     /// Ada gore arama; sonuclari boyuta gore azalan dondurur.
     pub fn find(&self, query: &str, limit: usize) -> Vec<u32> {
+        self.find_sorted(query, limit, SortOrder::SizeDescending)
+    }
+
+    pub fn find_sorted(&self, query: &str, limit: usize, order: SortOrder) -> Vec<u32> {
         let needle = fold_tr(query);
         if needle.is_empty() {
             return Vec::new();
@@ -305,16 +335,7 @@ impl Tree {
                 }
             }
         }
-        hits.sort_unstable_by(|&a, &b| {
-            self.nodes[b as usize]
-                .size
-                .cmp(&self.nodes[a as usize].size)
-                .then_with(|| {
-                    self.nodes[a as usize]
-                        .name
-                        .cmp(&self.nodes[b as usize].name)
-                })
-        });
+        self.sort_ids(&mut hits, order);
         hits.truncate(limit);
         hits
     }
@@ -519,6 +540,26 @@ mod tests {
         let kids = tree.children_sorted(0);
         assert_eq!(kids, vec![1, 4, 6]);
         assert_eq!(tree.path_of(5), "C:\\test\\b\\b1.txt");
+    }
+
+    #[test]
+    fn sorting_covers_all_orders_and_search_before_limit() {
+        let mut tree = sample_tree();
+        tree.node_mut(1).mtime = 20;
+        tree.node_mut(4).mtime = 30;
+        tree.node_mut(6).mtime = 10;
+        for (order, expected) in [
+            (SortOrder::SizeDescending, vec![1, 4, 6]),
+            (SortOrder::SizeAscending, vec![6, 4, 1]),
+            (SortOrder::NameAscending, vec![1, 4, 6]),
+            (SortOrder::NameDescending, vec![6, 4, 1]),
+            (SortOrder::ModifiedDescending, vec![4, 1, 6]),
+            (SortOrder::ModifiedAscending, vec![6, 1, 4]),
+        ] {
+            assert_eq!(tree.children_sorted_by(0, order), expected);
+        }
+        assert_eq!(tree.find_sorted("1", 1, SortOrder::SizeAscending), vec![5]);
+        assert_eq!(tree.find_sorted("1", 1, SortOrder::SizeDescending), vec![2]);
     }
 
     #[test]

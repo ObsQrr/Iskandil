@@ -1,5 +1,12 @@
 # Değişiklik Günlüğü
 
+## [1.2.0] — 2026-11-17
+
+- Dosya ağacına ve arama sonuçlarına boyut, ad ve değiştirilme tarihine göre
+  artan ve azalan sıralama eklendi. Klasör ağacında sıralama her klasörün
+  kendi çocuklarına uygulanır.
+- Sıralama seçenekleri ve aramada sonuç sınırı için regresyon testi eklendi.
+
 ## [0.1.0] — 2026-11-15
 
 İlk sürüm: Rust/egui tabanlı Windows disk alanı gezgini.

@@ -12,14 +12,15 @@ if ($LASTEXITCODE -ne 0) {
 $exe = Join-Path $root 'target\release\iskandil.exe'
 if (-not (Test-Path $exe)) { throw "missing exe: $exe" }
 
-$dist = Join-Path $root 'dist\iskandil'
+$version = '1.2.0'
+$dist = Join-Path $root "dist\iskandil-$version"
 New-Item -ItemType Directory -Force -Path $dist | Out-Null
 Copy-Item $exe (Join-Path $dist 'iskandil.exe') -Force
 Copy-Item (Join-Path $root 'README.md') $dist -Force
 Copy-Item (Join-Path $root 'LICENSE') $dist -Force
 
-$zip = Join-Path $root 'dist\iskandil-0.1.0-win-x64.zip'
-Compress-Archive -Path (Join-Path $dist '*') -DestinationPath $zip -Force
+$zip = Join-Path $root "dist\iskandil-$version-win-x64.zip"
+Compress-Archive -Path (Join-Path $dist 'iskandil.exe'), (Join-Path $dist 'README.md'), (Join-Path $dist 'LICENSE') -DestinationPath $zip -Force
 
 $size = (Get-Item $exe).Length
 $zipSize = (Get-Item $zip).Length

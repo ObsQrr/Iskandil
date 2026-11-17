@@ -6,7 +6,7 @@
 yer tuttuğunu ağaç, treemap ve tür dağılımıyla gösterir. TreeSize/WinDirStat
 işlevini Rust ile, sakin bir ölçüm aleti arayüzüyle yapar.
 
-**Depo:** [github.com/ObsQrr/Iskandil](https://github.com/ObsQrr/Iskandil) · **Sürüm:** 0.1.0
+**Depo:** [github.com/ObsQrr/Iskandil](https://github.com/ObsQrr/Iskandil) · **Sürüm:** 1.2.0
 
 ![Başlangıç ekranı](docs/screenshots/01-start-light.png)
 
@@ -19,6 +19,8 @@ işlevini Rust ile, sakin bir ölçüm aleti arayüzüyle yapar.
   Bir klasöre çift tıklayarak derinleşin, breadcrumb ile geri dönün.
 - **Dosya ağacı** — boyuta göre sıralı, sanallaştırılmış satırlar, satır içi pay
   çubukları, anlık arama.
+- **Sıralama** — dosya ağacında ve arama sonuçlarında boyut, ad veya değiştirilme
+  tarihine göre artan ya da azalan sıralama. Ağaçta her klasör kendi içinde sıralanır.
 - **Tür dağılımı** — video, görsel, ses, belge, kod, arşiv, uygulama ve diğer.
 - **En büyük dosyalar** — seçili klasördeki en büyük 5 dosya, tıklayınca yerine gider.
 - **Eylemler** — Gezgin'de göster, yolu kopyala, Geri Dönüşüm Kutusu'na taşı
@@ -61,7 +63,7 @@ yönetici hakkı istemez ve ağ/çıkarılabilir birimlerde de aynı yolu kullan
 Kurulum gerekmez; tek EXE.
 
 1. [Releases](https://github.com/ObsQrr/Iskandil/releases) sayfasından
-   `iskandil-0.1.0-win-x64.zip` dosyasını indirin.
+   `iskandil-1.2.0-win-x64.zip` dosyasını indirin.
 2. Arşivi bir klasöre açın ve `iskandil.exe` dosyasını çalıştırın.
 3. Bir sürücü seçin veya `C:\Users\...` gibi bir yol yazın.
 

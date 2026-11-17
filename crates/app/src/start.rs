@@ -33,7 +33,7 @@ impl IskandilApp {
                 ui.painter().text(
                     pos2(rect.right() - 20.0, rect.center().y),
                     Align2::RIGHT_CENTER,
-                    "v0.1.0",
+                    concat!("v", env!("CARGO_PKG_VERSION")),
                     theme::font_mono(8.5),
                     p.ink_faint,
                 );

@@ -5,6 +5,7 @@ use crate::theme::{self, Palette};
 use crate::widgets;
 use egui::{Align, Align2, Id, Layout, Rect, RichText, ScrollArea, Sense, Stroke, Ui, pos2, vec2};
 use iskandil_core::format as fmt;
+use iskandil_core::model::SortOrder;
 use iskandil_core::{Category, NONE};
 
 const TREE_ROW: f32 = 22.0;
@@ -137,6 +138,43 @@ impl IskandilApp {
 
         ui.add_space(6.0);
         search_field(ui, &p, &mut self.search);
+        self.ensure_search();
+        ui.add_space(5.0);
+        ui.horizontal(|ui| {
+            ui.add_space(14.0);
+            ui.label(
+                RichText::new("SIRALA")
+                    .font(theme::font_mono(9.0))
+                    .color(p.ink_muted),
+            );
+            let previous = self.sort_order;
+            egui::ComboBox::from_id_salt("tree-sort")
+                .selected_text(match self.sort_order {
+                    SortOrder::SizeDescending => "Boyut: büyükten küçüğe",
+                    SortOrder::SizeAscending => "Boyut: küçükten büyüğe",
+                    SortOrder::NameAscending => "Ad: A–Z",
+                    SortOrder::NameDescending => "Ad: Z–A",
+                    SortOrder::ModifiedDescending => "Tarih: yeniden eskiye",
+                    SortOrder::ModifiedAscending => "Tarih: eskiden yeniye",
+                })
+                .show_ui(ui, |ui| {
+                    for (order, label) in [
+                        (SortOrder::SizeDescending, "Boyut: büyükten küçüğe"),
+                        (SortOrder::SizeAscending, "Boyut: küçükten büyüğe"),
+                        (SortOrder::NameAscending, "Ad: A–Z"),
+                        (SortOrder::NameDescending, "Ad: Z–A"),
+                        (SortOrder::ModifiedDescending, "Tarih: yeniden eskiye"),
+                        (SortOrder::ModifiedAscending, "Tarih: eskiden yeniye"),
+                    ] {
+                        ui.selectable_value(&mut self.sort_order, order, label);
+                    }
+                });
+            if previous != self.sort_order {
+                self.rows_cache = None;
+                self.search_cache = None;
+            }
+        });
+        self.ensure_rows();
         self.ensure_search();
         ui.add_space(8.0);
         widgets::hairline(ui, &p);
